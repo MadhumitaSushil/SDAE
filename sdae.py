@@ -1,3 +1,7 @@
+'''
+@author madhumita
+'''
+
 from keras.models import Sequential
 from keras.layers.core import Dense, Dropout
 from keras.callbacks import EarlyStopping
