@@ -94,11 +94,11 @@ class StackedDenoisingAE(object):
             
             encoders.append(encoder)
         
-            data_in = self._get_intermediate_output(model, data_in, n_layer = 1, train = 0, n_out = self.n_hid[cur_layer], batch_size = self.batch_size) #train = 0 because we do not want to use dropout to get hidden node value, since is a train-only behavior, used only to learn weights. output of first layer: hidden layer
+            data_in = self._get_intermediate_output(model, data_in, n_layer = 1, train = 0, n_out = self.n_hid[cur_layer], batch_size = self.batch_size, shuffle, seed) #train = 0 because we do not want to use dropout to get hidden node value, since is a train-only behavior, used only to learn weights. output of first layer: hidden layer
     #         assert data_in.shape[1] == n_hid[cur_layer], "Output of hidden layer not retrieved"
             
-            data_val = self._get_intermediate_output(model, data_val, n_layer = 1, train = 0, n_out = self.n_hid[cur_layer], batch_size = self.batch_size) #get output of first layer (hidden layer) without dropout
-            data_test = self._get_intermediate_output(model, data_test, n_layer = 1, train = 0, n_out = self.n_hid[cur_layer], batch_size = self.batch_size)
+            data_val = self._get_intermediate_output(model, data_val, n_layer = 1, train = 0, n_out = self.n_hid[cur_layer], batch_size = self.batch_size, shuffle, seed) #get output of first layer (hidden layer) without dropout
+            data_test = self._get_intermediate_output(model, data_test, n_layer = 1, train = 0, n_out = self.n_hid[cur_layer], batch_size = self.batch_size, shuffle, seed)
 
         pretrained_model = self._build_model_from_encoders(encoders)      
         return pretrained_model, (data_in, data_val, data_test)
@@ -126,7 +126,7 @@ class StackedDenoisingAE(object):
           
         return n_hid, dropout, enc_act, dec_act
     
-    def _get_intermediate_output(self, model, data_in, n_layer, train, n_out, batch_size):
+    def _get_intermediate_output(self, model, data_in, n_layer, train, n_out, batch_size, shuffle, seed):
         '''
         Returns output of a given intermediate layer in a model
         @param model: model to get output from
@@ -135,11 +135,13 @@ class StackedDenoisingAE(object):
         @param train: (0/1) 1 to use training config, like dropout noise.
         @param n_out: number of output nodes in the given layer (pre-specify so as to use generator function with sparse matrix to get layer output)
         @param batch_size: the num of instances to convert to dense at a time
+        @param shuffle: True to shuffle data
+        @param seed: seed for replicability of shuffled data
         @return value of intermediate layer
         '''
         data_out = np.zeros(shape = (data_in.shape[0],n_out))
         
-        x_batch_gen = nn_utils.x_generator(data_in, batch_size = batch_size)
+        x_batch_gen = nn_utils.x_generator(data_in, batch_size = batch_size, shuffle = shuffle, seed = seed)
         stop_iter = int(np.ceil(data_in.shape[0]/batch_size))
         
         for i in range(stop_iter):
