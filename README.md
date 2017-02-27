@@ -1,4 +1,4 @@
-# H1 Stacked denoising autoencoder
+# Stacked denoising autoencoder
 
 
 Implements stacked denoising autoencoder in Keras without tied weights.
