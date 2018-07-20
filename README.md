@@ -16,6 +16,6 @@ Requirements:
 
 
 1. Python 3.4
-2. keras
+2. keras 1.2
 3. numpy
 4. scipy
