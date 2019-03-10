@@ -3,7 +3,7 @@
 '''
 
 from keras.models import model_from_json
-from keras.utils.visualize_util import plot
+from keras.utils.vis_utils import plot_model
 import numpy as np
 import scipy.sparse as scp
 
@@ -82,7 +82,7 @@ def save_model(model, out_dir, f_arch = 'model_arch.png', f_model = 'model_arch.
     @param f_weights: filename for model weights
     '''
     model.summary()
-    plot(model, to_file=out_dir+f_arch)
+    plot_model(model, to_file=out_dir+f_arch)
     
     json_string = model.to_json()
     open(out_dir+f_model, 'w').write(json_string)
