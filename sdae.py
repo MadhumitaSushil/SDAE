@@ -61,15 +61,18 @@ class StackedDenoisingAE(object):
     def get_pretrained_sda(self, data_in, data_val, data_test, dir_out, get_enc_model = True, write_model = True, model_layers = None):
         '''
         Pretrains layers of a stacked denoising autoencoder to generate low-dimensional representation of data.
-        Returns a supervised model with pretrained encoding layers and a softmax layer on top, or a list of pretrained sdae layers. 
+        Returns a Sequential model with the Dropout layer and pretrained encoding layers added sequentially. 
+        Optionally, we can return a list of pretrained sdae models by setting get_enc_model to False. 
         Additionally, returns dense representation of input, validation and test data. 
         This dense representation is the value of the hidden node of the last layer.
-        The cur_model be used in supervised task by adding a classification/regression layer on top, or the dense pretrained data can be used as input of another cur_model.
+        The cur_model be used in supervised task by adding a classification/regression layer on top, 
+        or the dense pretrained data can be used as input of another cur_model.
         @param data_in: input data (scipy sparse matrix supported)
         @param data_val: validation data (scipy sparse matrix supported)
         @param data_test: test data (scipy sparse matrix supported)
         @param dir_out: output directory to write cur_model
-        @param get_enc_model: True to get supervised cur_model from SDAE
+        @param get_enc_model: True to get a Sequential model with Dropout and encoding layers from SDAE. 
+                              If False, returns a list of all the encoding-decoding models within our stacked denoising autoencoder.
         @param write_model: True to write cur_model to file
         @param model_layers: Pretrained cur_model layers, to continue training pretrained model_layers, if required
         '''
